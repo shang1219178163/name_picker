@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>课堂随机提问点名器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#12172a">
+  <title>点名器</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2312172a'/><text x='50' y='72' font-size='58' text-anchor='middle' fill='%23f3cd49'>点</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -11,7 +12,7 @@
   <div class="app">
     <header class="topbar">
       <span class="roster-stat" id="rosterStat">名单 0 人</span>
-      <h1 class="title">课堂随机提问点名器</h1>
+      <h1 class="title">点名器</h1>
       <div class="top-actions">
         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
         <button class="import-btn" id="importBtn" type="button">
@@ -29,8 +30,8 @@
 
     <section class="controls" aria-label="点名操作">
       <button class="ctrl start" id="toggleBtn" type="button" aria-pressed="false">开始随机</button>
-      <button class="ctrl reset" id="resetAllBtn" type="button">重置全部名单</button>
-      <button class="ctrl clear" id="clearPickedBtn" type="button">清空已点记录</button>
+      <button class="ctrl reset" id="resetAllBtn" type="button">重置名单</button>
+      <button class="ctrl clear" id="clearPickedBtn" type="button">清空记录</button>
     </section>
 
     <section class="history">

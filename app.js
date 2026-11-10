@@ -1,4 +1,4 @@
-/* 课堂随机提问点名器 · 前端逻辑 */
+/* 点名器 · 前端逻辑 */
 (function () {
   'use strict';
 
@@ -245,7 +245,7 @@
     renderHistory({ animate: false });
     updateStat();
     save();
-    toast('已重置全部名单');
+    toast('已重置名单');
   }
 
   function clearPicked() {
@@ -259,7 +259,6 @@
     renderHistory({ animate: false });
     updateStat();
     save();
-    toast('已点记录已清空');
   }
 
   /* ---------- 彩带 ---------- */
