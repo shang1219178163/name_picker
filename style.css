@@ -153,25 +153,14 @@ body {
   filter: drop-shadow(0 0 7px rgba(186, 222, 255, 0.9));
   opacity: 0;
   transform: rotate(16deg);
-  animation: meteor 6s linear infinite;
-}
-
-.stars span:nth-child(2) {
-  --dx: -36vw;
-  --dy: 4vh;
-  top: 6vh;
-  left: 94vw;
-  width: min(190px, 30vw);
-  height: 1.5px;
-  animation-duration: 8.5s;
-  animation-delay: 3.4s;
+  animation: meteor 5s linear infinite;
 }
 
 @keyframes meteor {
   0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(16deg); }
   4% { opacity: 0; }
-  7% { opacity: 1; }
-  26% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(16deg); }
+  10% { opacity: 1; }
+  34% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(16deg); }
   100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(16deg); }
 }
 
