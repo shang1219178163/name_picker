@@ -1,0 +1,104 @@
+# 课堂随机提问点名器
+
+纯前端随机点名工具，双击 `index.html` 即可使用，无需服务器、无需联网。
+
+## 界面
+
+- 深蓝背景 + 金色标题 `课堂随机提问点名器`
+- 中央大面板显示姓名，抽中时放大定格并撒彩带
+- 下方三个按钮：开始随机 / 停止选人（同一个按钮切换）、重置全部名单、清空已点记录
+- 底部显示「已提问过的同学：」记录
+- 右上角「导入 Excel」，左上角显示名单人数
+
+## 使用
+
+1. 打开 `index.html`。
+2. 点击右上角「导入 Excel」选择表格，或直接把文件拖进页面。
+3. 点击「开始随机」，名字开始滚动，按钮变为红色的「停止选人」。
+4. 再次点击同一按钮（或直接点姓名面板、按空格）定格结果，按钮恢复绿色「开始随机」。
+5. 下一次点名会自动跳过已经点过的同学。
+
+## Excel 格式
+
+支持 `.xlsx` / `.xls` / `.csv`，读取第一张工作表。
+
+推荐只有一列姓名：
+
+| 姓名 |
+| --- |
+| 张三 |
+| 李四 |
+| 王五 |
+
+多列也可以，程序会优先找表头为「姓名 / 名字 / 学生姓名 / name」的列：
+
+| 序号 | 姓名 | 学号 |
+| --- | --- | --- |
+| 1 | 张三 | 2024001 |
+| 2 | 李四 | 2024002 |
+
+- 没有表头时，自动选取文本内容最多的一列，不会把学号、序号当名字。
+- CSV 自动兼容 UTF-8 与 GBK 编码。
+- 同名只保留一次。
+
+## 按钮说明
+
+| 按钮 | 作用 |
+| --- | --- |
+| 开始随机 / 停止选人 | 同一个按钮：点击开始滚动，同时变红显示「停止选人」；再点一次定格结果并写入已点记录 |
+| 重置全部名单 | 清空已点记录，姓名重新回到待抽池 |
+| 清空已点记录 | 只清空底部记录，保留当前显示的姓名 |
+
+## 文件说明
+
+```
+name_picker/
+├── index.html                 页面结构
+├── style.css                  样式与动效
+├── app.js                     点名、导入、存储等逻辑
+├── vendor/xlsx.full.min.js    SheetJS，本地解析 Excel
+├── CHANGELOG.md               更新日志
+└── README.md                  本说明
+```
+
+## 备注
+
+- 名单与已点记录保存在浏览器 localStorage 中，换浏览器或清理浏览器数据会丢失。
+- 如果浏览器限制本地文件读取，可用静态服务器打开：
+  `python3 -m http.server 8000`，然后访问 `http://localhost:8000`。
+
+## 在线访问
+
+GitHub Pages 自动部署：https://shang1219178163.github.io/name_picker/
+
+主分支 `main` 每次推送都会触发 `.github/workflows/deploy.yml`，自动发布到 Pages。
+
+## 分支模型（Git Flow）
+
+| 分支 | 用途 |
+| --- | --- |
+| `main` | 线上版本，只接受来自 `release/*` 或 `hotfix/*` 的合并，推送即部署 |
+| `develop` | 日常开发集成分支，功能完成后合并到此 |
+| `feature/*` | 单个功能开发，从 `develop` 切出，完成后合回 `develop` |
+| `release/*` | 发版准备，从 `develop` 切出，合入 `main` 并回流 `develop` |
+| `hotfix/*` | 线上紧急修复，从 `main` 切出，合入 `main` 与 `develop` |
+
+日常流程：
+
+```bash
+git checkout develop
+git checkout -b feature/xxx
+# ... 开发、提交 ...
+git checkout develop && git merge --no-ff feature/xxx
+git branch -d feature/xxx
+```
+
+发布流程：
+
+```bash
+git checkout -b release/1.0.0 develop
+git checkout main && git merge --no-ff release/1.0.0 && git tag v1.0.0
+git checkout develop && git merge --no-ff release/1.0.0
+git branch -d release/1.0.0
+git push origin main develop --tags   # 触发 Pages 部署
+```

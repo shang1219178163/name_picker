@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课堂随机提问点名器</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2312172a'/><text x='50' y='72' font-size='58' text-anchor='middle' fill='%23f3cd49'>点</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <span class="roster-stat" id="rosterStat">名单 0 人</span>
+      <h1 class="title">课堂随机提问点名器</h1>
+      <div class="top-actions">
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+        <button class="import-btn" id="importBtn" type="button">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+          导入 Excel
+        </button>
+      </div>
+    </header>
+
+    <main class="panel" id="panel">
+      <div class="name" id="nameDisplay" aria-live="polite">准备开始</div>
+    </main>
+
+    <section class="controls" aria-label="点名操作">
+      <button class="ctrl start" id="toggleBtn" type="button" aria-pressed="false">开始随机</button>
+      <button class="ctrl reset" id="resetAllBtn" type="button">重置全部名单</button>
+      <button class="ctrl clear" id="clearPickedBtn" type="button">清空已点记录</button>
+    </section>
+
+    <section class="history">
+      <h2 class="history-title">已提问过的同学：</h2>
+      <div class="history-list" id="historyList"></div>
+      <p class="history-empty" id="historyEmpty">暂无记录</p>
+    </section>
+  </div>
+
+  <div class="drop-mask" id="dropMask">
+    <div class="drop-box">
+      <strong>松开即可导入</strong>
+      <span>支持 .xlsx / .xls / .csv</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
