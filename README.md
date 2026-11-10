@@ -4,7 +4,7 @@
 
 ## 界面
 
-- 深色极光背景 + 磨砂玻璃面板 + 霓虹细描边，金色渐变标题 `点名器`
+- 深空星空背景（双层星点 + 偶发流星 + 银河光带）+ 磨砂玻璃面板 + 霓虹细描边，金色渐变标题 `点名器`
 - 中央磨砂玻璃盘面显示姓名，抽中时放大定格并撒彩带
 - 暗玻璃次按钮配蓝紫霓虹描边、实色渐变主按钮，圆角胶囊控件
 - 下方三个按钮：开始随机 / 停止选人（同一个按钮切换）、重置名单、清空记录
@@ -58,6 +58,7 @@ name_picker/
 ├── style.css                  样式与动效
 ├── app.js                     点名、导入、存储等逻辑
 ├── vendor/xlsx.full.min.js    SheetJS，本地解析 Excel
+├── assets/stars-a.svg, stars-b.svg  星空背景贴图
 ├── .github/workflows/deploy.yml  tag 触发 Pages 部署
 ├── CHANGELOG.md               更新日志
 └── README.md                  本说明
