@@ -2,14 +2,17 @@
 
 纯前端随机点名工具，双击 `index.html` 即可使用，无需服务器、无需联网。
 
+当前版本：**v1.1.0**（详见 [CHANGELOG.md](CHANGELOG.md)）
+
 ## 界面
 
-- 深空星空背景（双层星点 + 偶发流星 + 银河光带）+ 磨砂玻璃面板 + 霓虹细描边，金色渐变标题 `点名器`
+- 深空星空背景（canvas 星点 + 星云光晕 + 偶发流星）+ 磨砂玻璃面板 + 霓虹细描边，金色渐变标题 `点名器`
 - 中央磨砂玻璃盘面显示姓名，抽中时放大定格并撒彩带
 - 暗玻璃次按钮配蓝紫霓虹描边、实色渐变主按钮，圆角胶囊控件
 - 下方三个按钮：开始随机 / 停止选人（同一个按钮切换）、重置名单、清空记录
 - 底部显示「已提问过的同学：」记录
-- 右上角「导入 Excel」，左上角显示名单人数
+- 右上角「导入 Excel」，旁边齿轮按钮打开「动态参数」面板，左上角显示名单人数
+- 动态参数可实时调整：流星间隔、流星头部大小、背景星数量、闪烁星数量、星点呼吸速度、极光流动速度；关闭面板时写入本地存储
 
 ## 使用
 
@@ -58,7 +61,6 @@ name_picker/
 ├── style.css                  样式与动效
 ├── app.js                     点名、导入、存储等逻辑
 ├── vendor/xlsx.full.min.js    SheetJS，本地解析 Excel
-├── assets/stars-a.svg, stars-b.svg  星空背景贴图
 ├── .github/workflows/deploy.yml  tag 触发 Pages 部署
 ├── CHANGELOG.md               更新日志
 └── README.md                  本说明
@@ -74,7 +76,7 @@ name_picker/
 
 GitHub Pages 自动部署：https://shang1219178163.github.io/name_picker/
 
-推送 `v*.*.*` 形式的 tag（如 `v1.0.0`）会触发 `.github/workflows/deploy.yml`，自动发布到 Pages。普通提交不会上线，只有打 tag 才发版。
+推送 `v*.*.*` 形式的 tag（如 `v1.1.0`）会触发 `.github/workflows/deploy.yml`，自动发布到 Pages。普通提交不会上线，只有打 tag 才发版。
 
 ## 分支模型（Git Flow）
 
@@ -104,7 +106,7 @@ git checkout -b release/1.0.0 develop
 gh pr create --base main --head release/1.0.0   # 走 PR 合入 main
 gh pr merge --merge                              # 合并后 main 不会自动部署
 git checkout main && git pull
-git tag v1.0.0 && git push origin v1.0.0         # 打 tag 才会触发 Pages 部署
+git tag v1.1.0 && git push origin v1.1.0         # 打 tag 才会触发 Pages 部署
 git checkout develop && git merge --no-ff release/1.0.0
 git branch -d release/1.0.0
 ```

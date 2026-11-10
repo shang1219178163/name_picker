@@ -4,7 +4,8 @@
 
   const STORAGE_KEYS = {
     names: 'picker.names',
-    picked: 'picker.picked'
+    picked: 'picker.picked',
+    motion: 'picker.motion'
   };
 
   const NAME_HEADERS = [
@@ -25,7 +26,12 @@
     historyEmpty: document.getElementById('historyEmpty'),
     dropMask: document.getElementById('dropMask'),
     toast: document.getElementById('toast'),
-    confetti: document.getElementById('confetti')
+    confetti: document.getElementById('confetti'),
+    twinkles: document.getElementById('twinkles'),
+    settingsBtn: document.getElementById('settingsBtn'),
+    settingsMenu: document.getElementById('settingsMenu'),
+    settingsClose: document.getElementById('settingsClose'),
+    settingsReset: document.getElementById('settingsReset')
   };
 
   const state = {
@@ -36,6 +42,39 @@
     raf: null,
     pool: []
   };
+
+  /* ---------- 动态参数 ---------- */
+  const MOTION_DEFAULTS = {
+    meteorCycle: 5,
+    meteorHead: 9,
+    starCount: 100,
+    twinkleSpeed: 1,
+    auroraSpeed: 1
+  };
+
+  // 背景星默认密度：约每 900px² 一颗（桌面约 1300 颗，手机约 280 颗）
+  function defaultBaseStarCount() {
+    const raw = Math.round((innerWidth * innerHeight) / 900 / 100) * 100;
+    return Math.min(2000, Math.max(100, raw));
+  }
+
+  const MOTION_FIELDS = [
+    { key: 'meteorCycle', inputId: 'optMeteorCycle', outputId: 'valMeteorCycle', format: v => v.toFixed(1) + 's' },
+    { key: 'meteorHead', inputId: 'optMeteorHead', outputId: 'valMeteorHead', format: v => v.toFixed(0) + 'px' },
+    { key: 'baseStarCount', inputId: 'optBaseStarCount', outputId: 'valBaseStarCount', format: v => v.toFixed(0) + ' 颗' },
+    { key: 'starCount', inputId: 'optStarCount', outputId: 'valStarCount', format: v => v.toFixed(0) + ' 颗' },
+    { key: 'twinkleSpeed', inputId: 'optTwinkleSpeed', outputId: 'valTwinkleSpeed', format: v => v.toFixed(2) + '×' },
+    { key: 'auroraSpeed', inputId: 'optAuroraSpeed', outputId: 'valAuroraSpeed', format: v => v.toFixed(2) + '×' }
+  ];
+
+  const storedMotion = loadJSON(STORAGE_KEYS.motion, {});
+  const motion = Object.assign({}, MOTION_DEFAULTS, storedMotion);
+  // 兼容旧版本保存的星点数量（0/自动、200 以内）
+  motion.starCount = Math.min(1000, Math.max(100, Math.round(motion.starCount) || 100));
+  // 背景星：没保存过就按屏幕面积给默认值
+  motion.baseStarCount = Number.isFinite(storedMotion.baseStarCount)
+    ? Math.min(2000, Math.max(0, Math.round(storedMotion.baseStarCount)))
+    : defaultBaseStarCount();
 
   /* ---------- 工具 ---------- */
   function loadJSON(key, fallback) {
@@ -534,14 +573,239 @@
     readSheet(file);
   });
 
+  let twinkleResizeTimer = null;
+
   window.addEventListener('resize', () => {
     resizeConfetti();
     if (!state.rolling) fitName();
+    clearTimeout(twinkleResizeTimer);
+    twinkleResizeTimer = setTimeout(buildTwinkles, 180);
+  });
+
+  /* ---------- 动态参数 ---------- */
+  function applyMotion() {
+    const style = document.documentElement.style;
+    style.setProperty('--meteor-cycle', motion.meteorCycle + 's');
+    style.setProperty('--meteor-head', motion.meteorHead + 'px');
+    style.setProperty('--twinkle-speed', String(motion.twinkleSpeed));
+    style.setProperty('--aurora-speed', String(motion.auroraSpeed));
+  }
+
+  function refreshMotionInputs() {
+    MOTION_FIELDS.forEach(field => {
+      const input = document.getElementById(field.inputId);
+      const output = document.getElementById(field.outputId);
+      if (input) input.value = motion[field.key];
+      if (output) output.textContent = field.format(motion[field.key]);
+    });
+  }
+
+  let motionDirty = false;
+
+  function saveMotion() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.motion, JSON.stringify(motion));
+    } catch (err) {
+      /* 隐私模式下写入失败可忽略 */
+    }
+    motionDirty = false;
+  }
+
+  function setupMotionMenu() {
+    const menu = el.settingsMenu;
+    const btn = el.settingsBtn;
+    if (!menu || !btn) return;
+
+    const setOpen = open => {
+      const wasOpen = !menu.hidden;
+      menu.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      // 关闭菜单时才写入本地存储，拖动滑块过程中不落盘
+      if (wasOpen && !open && motionDirty) saveMotion();
+    };
+
+    btn.addEventListener('click', () => setOpen(menu.hidden));
+    el.settingsClose.addEventListener('click', () => setOpen(false));
+    document.addEventListener('click', event => {
+      if (!menu.hidden && !menu.contains(event.target) && !btn.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !menu.hidden) setOpen(false);
+    });
+
+    MOTION_FIELDS.forEach(field => {
+      const input = document.getElementById(field.inputId);
+      const output = document.getElementById(field.outputId);
+      if (!input) return;
+      input.addEventListener('input', () => {
+        const value = Number(input.value);
+        const isStarField = field.key === 'starCount' || field.key === 'baseStarCount';
+        const starsChanged = isStarField && value !== motion[field.key];
+        motion[field.key] = value;
+        if (output) output.textContent = field.format(value);
+        applyMotion();
+        if (starsChanged) buildTwinkles();
+        motionDirty = true;
+      });
+    });
+
+    el.settingsReset.addEventListener('click', () => {
+      Object.assign(motion, MOTION_DEFAULTS);
+      motion.baseStarCount = defaultBaseStarCount();
+      refreshMotionInputs();
+      applyMotion();
+      buildTwinkles();
+      motionDirty = true;
+    });
+  }
+
+  /* ---------- 呼吸星：canvas 绘制，几千颗也能保持流畅 ---------- */
+  const twinkle = {
+    canvas: el.twinkles,
+    ctx: null,
+    sprite: null,
+    baseCanvas: null,
+    stars: [],
+    width: 0,
+    height: 0,
+    raf: null,
+    last: 0
+  };
+
+  function makeStarSprite() {
+    const size = 64;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.24, 'rgba(255, 255, 255, 0.95)');
+    gradient.addColorStop(0.5, 'rgba(198, 228, 255, 0.32)');
+    gradient.addColorStop(1, 'rgba(170, 210, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    return canvas;
+  }
+
+  function buildBaseStars() {
+    const count = Math.round(motion.baseStarCount);
+    if (!count) {
+      twinkle.baseCanvas = null;
+      return;
+    }
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(twinkle.width * dpr);
+    canvas.height = Math.round(twinkle.height * dpr);
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (let i = 0; i < count; i++) {
+      const big = Math.random() < 0.08;
+      const size = big ? 1.6 + Math.random() * 1.4 : 0.4 + Math.random() * 1;
+      const draw = size * 4.2;
+      ctx.globalAlpha = 0.4 + Math.random() * 0.6;
+      ctx.drawImage(
+        twinkle.sprite,
+        Math.random() * twinkle.width - draw / 2,
+        Math.random() * twinkle.height - draw / 2,
+        draw,
+        draw
+      );
+    }
+    twinkle.baseCanvas = canvas;
+  }
+
+  function drawTwinkles(now, still) {
+    const ctx = twinkle.ctx;
+    if (!ctx) return;
+    ctx.clearRect(0, 0, twinkle.width, twinkle.height);
+    const t = (now / 1000) * motion.twinkleSpeed;
+
+    if (twinkle.baseCanvas) {
+      // 背景星：整层缓慢呼吸，一次性绘制离屏画布
+      ctx.globalAlpha = still ? 0.8 : 0.6 + 0.28 * (0.5 + 0.5 * Math.sin(t * 0.7));
+      ctx.drawImage(twinkle.baseCanvas, 0, 0, twinkle.width, twinkle.height);
+    }
+
+    for (let i = 0; i < twinkle.stars.length; i++) {
+      const star = twinkle.stars[i];
+      const breath = still ? 0.7 : 0.12 + 0.88 * (0.5 + 0.5 * Math.sin(t * star.speed + star.phase));
+      const draw = star.size * 4.2 * (0.55 + 0.45 * breath);
+      ctx.globalAlpha = breath;
+      ctx.drawImage(twinkle.sprite, star.x - draw / 2, star.y - draw / 2, draw, draw);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function twinkleFrame(now) {
+    if (now - twinkle.last >= 33) {
+      drawTwinkles(now, false);
+      twinkle.last = now;
+    }
+    twinkle.raf = requestAnimationFrame(twinkleFrame);
+  }
+
+  function startTwinkles() {
+    if (twinkle.raf) return;
+    twinkle.raf = requestAnimationFrame(twinkleFrame);
+  }
+
+  function stopTwinkles() {
+    if (twinkle.raf) cancelAnimationFrame(twinkle.raf);
+    twinkle.raf = null;
+  }
+
+  function buildTwinkles() {
+    if (!twinkle.canvas) return;
+    twinkle.ctx = twinkle.ctx || twinkle.canvas.getContext('2d');
+    twinkle.sprite = twinkle.sprite || makeStarSprite();
+
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    twinkle.width = innerWidth;
+    twinkle.height = innerHeight;
+    twinkle.canvas.width = Math.round(innerWidth * dpr);
+    twinkle.canvas.height = Math.round(innerHeight * dpr);
+    twinkle.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    buildBaseStars();
+
+    const count = Math.round(motion.starCount);
+    twinkle.stars.length = 0;
+    for (let i = 0; i < count; i++) {
+      const big = Math.random() < 0.1;
+      twinkle.stars.push({
+        x: Math.random() * twinkle.width,
+        y: Math.random() * twinkle.height,
+        size: big ? 2.2 + Math.random() * 1.6 : 0.7 + Math.random() * 1.1,
+        speed: (Math.PI * 2) / (1.2 + Math.random() * 2.4),
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      stopTwinkles();
+      drawTwinkles(0, true);
+    } else {
+      drawTwinkles(performance.now(), false);
+      startTwinkles();
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopTwinkles();
+    } else if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      startTwinkles();
+    }
   });
 
   /* ---------- 初始化 ---------- */
   function init() {
     resizeConfetti();
+    refreshMotionInputs();
+    applyMotion();
+    setupMotionMenu();
+    buildTwinkles();
 
     const nameSet = new Set(state.names);
     state.picked = state.picked.filter(name => nameSet.has(name));
