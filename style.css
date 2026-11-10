@@ -21,6 +21,7 @@ html, body {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
@@ -31,9 +32,10 @@ body {
 
 .app {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 0 2% 4vh;
+  padding: 0 2% calc(4vh + env(safe-area-inset-bottom));
 }
 
 /* ---------- 顶部标题栏 ---------- */
@@ -90,6 +92,8 @@ body {
   font-weight: 700;
   letter-spacing: 0.06em;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
@@ -208,6 +212,8 @@ body {
   letter-spacing: 0.06em;
   cursor: pointer;
   white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: filter 0.18s ease, transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -317,7 +323,7 @@ body {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 34px;
+  bottom: calc(34px + env(safe-area-inset-bottom));
   z-index: 60;
   transform: translate(-50%, 18px);
   padding: 12px 22px;
@@ -400,19 +406,47 @@ body {
 }
 
 @media (max-width: 480px) {
-  .title { letter-spacing: 0.02em; }
-  .roster-stat { display: none; }
-  .top-actions { grid-column: 1 / -1; justify-self: center; }
-  .panel { height: 30vh; min-height: 170px; margin-top: 18px; }
-  .name { font-size: clamp(44px, 15vw, 88px); }
+  .app { padding-left: 14px; padding-right: 14px; }
+  .topbar { row-gap: 10px; padding-top: 16px; }
+  .title { font-size: 30px; letter-spacing: 0.06em; }
+  .roster-stat { display: block; font-size: 12px; letter-spacing: 0.04em; }
+  .import-btn { height: 44px; padding: 0 14px; font-size: 14px; }
+  .panel {
+    height: clamp(180px, 30vh, 300px);
+    min-height: 180px;
+    margin-top: 16px;
+    padding: 16px 12px;
+  }
+  .name { font-size: clamp(40px, 17vw, 84px); }
+  .name.is-placeholder { font-size: 22px; letter-spacing: 0.12em; }
   .controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    margin-top: 18px;
   }
-  .ctrl { width: 100%; height: 50px; padding: 0 8px; font-size: 15px; }
+  .ctrl {
+    width: 100%;
+    height: 52px;
+    padding: 0 8px;
+    font-size: 17px;
+    letter-spacing: 0.04em;
+  }
   #toggleBtn { grid-column: 1 / -1; }
+  .history { margin-top: 22px; }
   .history-title { font-size: 15px; }
+  .history-list { gap: 8px; margin-top: 10px; }
+  .chip { font-size: 14px; padding: 8px 14px; }
+  .history-empty { font-size: 13px; }
+  .toast { max-width: calc(100% - 32px); text-align: center; }
+}
+
+/* 横屏矮屏（手机横放）时压缩纵向留白，保证按钮在首屏可见 */
+@media (max-width: 900px) and (max-height: 560px) {
+  .topbar { padding-top: 10px; }
+  .panel { height: 46vh; min-height: 130px; margin-top: 12px; }
+  .controls { margin-top: 12px; }
+  .history { margin-top: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
