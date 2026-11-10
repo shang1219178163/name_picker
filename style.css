@@ -26,9 +26,11 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   background:
-    radial-gradient(900px 620px at 50% -12%, rgba(99, 102, 241, 0.22), transparent 62%),
-    radial-gradient(760px 560px at 108% 106%, rgba(34, 211, 238, 0.1), transparent 62%),
-    linear-gradient(180deg, #080c17 0%, var(--bg) 52%, var(--bg-deep) 100%);
+    linear-gradient(118deg, transparent 16%, rgba(176, 196, 255, 0.05) 40%, rgba(139, 92, 246, 0.09) 50%, rgba(34, 211, 238, 0.05) 61%, transparent 84%),
+    radial-gradient(1000px 720px at 18% -14%, rgba(91, 76, 214, 0.3), transparent 62%),
+    radial-gradient(880px 680px at 96% 4%, rgba(34, 211, 238, 0.16), transparent 62%),
+    radial-gradient(1100px 820px at 48% 118%, rgba(139, 92, 246, 0.22), transparent 66%),
+    linear-gradient(180deg, #0b1228 0%, #081022 46%, #060a17 100%);
   background-color: var(--bg-deep);
   background-attachment: fixed;
   color: var(--text);
@@ -67,7 +69,7 @@ body {
   height: 52vmax;
   top: -26vmax;
   left: -14vmax;
-  background: radial-gradient(circle, rgba(109, 94, 252, 0.34), rgba(109, 94, 252, 0) 68%);
+  background: radial-gradient(circle, rgba(109, 94, 252, 0.42), rgba(109, 94, 252, 0) 68%);
   animation: aurora-a 26s ease-in-out infinite alternate;
 }
 
@@ -76,7 +78,7 @@ body {
   height: 40vmax;
   right: -12vmax;
   bottom: -22vmax;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0) 68%);
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.24), rgba(34, 211, 238, 0) 68%);
   animation: aurora-b 30s ease-in-out infinite alternate;
 }
 
@@ -99,6 +101,63 @@ body {
 @keyframes aurora-b {
   from { transform: translate3d(0, 0, 0) scale(1.04); }
   to { transform: translate3d(-5vmax, -4vmax, 0) scale(0.96); }
+}
+
+/* ---------- 星空 ---------- */
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.stars::before,
+.stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+}
+
+.stars::before {
+  background-image: url("assets/stars-a.svg");
+  background-size: 700px 520px;
+  opacity: 0.85;
+  animation: twinkle 7s ease-in-out infinite alternate;
+}
+
+.stars::after {
+  background-image: url("assets/stars-b.svg");
+  background-size: 1050px 780px;
+  opacity: 0.75;
+  animation: twinkle 11s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.62; }
+  to { opacity: 0.95; }
+}
+
+/* 远处流星 */
+.stars span {
+  position: absolute;
+  top: 14%;
+  left: 72%;
+  width: 170px;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(206, 232, 255, 0.85) 62%, rgba(255, 255, 255, 0.95) 100%);
+  border-radius: 999px;
+  opacity: 0;
+  transform: rotate(22deg);
+  animation: meteor 11s ease-in infinite;
+}
+
+@keyframes meteor {
+  0%, 86% { opacity: 0; transform: translate3d(0, 0, 0) rotate(22deg); }
+  88% { opacity: 0.9; }
+  95% { opacity: 0; transform: translate3d(-420px, 175px, 0) rotate(22deg); }
+  100% { opacity: 0; }
 }
 
 .app {
@@ -672,6 +731,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .panel.rolling .name { animation: none !important; }
-  .aurora span { animation: none !important; }
+  .aurora span,
+  .stars::before,
+  .stars::after,
+  .stars span { animation: none !important; }
+  .stars span { opacity: 0 !important; }
   * { transition-duration: 0.01ms !important; }
 }
