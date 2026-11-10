@@ -77,7 +77,7 @@ GitHub Pages 自动部署：https://shang1219178163.github.io/name_picker/
 
 | 分支 | 用途 |
 | --- | --- |
-| `main` | 线上版本，只接受来自 `release/*` 或 `hotfix/*` 的合并，推送即部署 |
+| `main` | 线上版本，只接受来自 `release/*` 或 `hotfix/*` 的合并，必须通过 PR 合入（已加分支保护），推送即部署 |
 | `develop` | 日常开发集成分支，功能完成后合并到此 |
 | `feature/*` | 单个功能开发，从 `develop` 切出，完成后合回 `develop` |
 | `release/*` | 发版准备，从 `develop` 切出，合入 `main` 并回流 `develop` |
@@ -102,3 +102,5 @@ git checkout develop && git merge --no-ff release/1.0.0
 git branch -d release/1.0.0
 git push origin main develop --tags   # 触发 Pages 部署
 ```
+
+`main` 已开启分支保护：禁止直接 push 和强推，改动必须走 PR；`develop` 禁止强推与删除。合并 `main` 的 PR 会自动触发 Pages 部署。
