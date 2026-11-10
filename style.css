@@ -139,25 +139,40 @@ body {
   to { opacity: 0.95; }
 }
 
-/* 远处流星 */
+/* 流星：只在顶部天空区域划过，避免被玻璃面板挡住 */
 .stars span {
+  --dx: -45vw;
+  --dy: 9vh;
   position: absolute;
-  top: 14%;
-  left: 72%;
-  width: 170px;
-  height: 1.5px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(206, 232, 255, 0.85) 62%, rgba(255, 255, 255, 0.95) 100%);
+  top: 3vh;
+  left: 88vw;
+  width: min(260px, 40vw);
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(206, 232, 255, 0.5) 46%, rgba(255, 255, 255, 0) 100%);
   border-radius: 999px;
+  filter: drop-shadow(0 0 7px rgba(186, 222, 255, 0.9));
   opacity: 0;
-  transform: rotate(22deg);
-  animation: meteor 11s ease-in infinite;
+  transform: rotate(16deg);
+  animation: meteor 6s linear infinite;
+}
+
+.stars span:nth-child(2) {
+  --dx: -36vw;
+  --dy: 4vh;
+  top: 6vh;
+  left: 94vw;
+  width: min(190px, 30vw);
+  height: 1.5px;
+  animation-duration: 8.5s;
+  animation-delay: 3.4s;
 }
 
 @keyframes meteor {
-  0%, 86% { opacity: 0; transform: translate3d(0, 0, 0) rotate(22deg); }
-  88% { opacity: 0.9; }
-  95% { opacity: 0; transform: translate3d(-420px, 175px, 0) rotate(22deg); }
-  100% { opacity: 0; }
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(16deg); }
+  4% { opacity: 0; }
+  7% { opacity: 1; }
+  26% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(16deg); }
+  100% { opacity: 0; transform: translate3d(var(--dx), var(--dy), 0) rotate(16deg); }
 }
 
 .app {
