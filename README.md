@@ -2,22 +2,23 @@
 
 纯前端随机点名工具，双击 `index.html` 即可使用，无需服务器、无需联网。
 
-当前版本：**v1.1.0**（详见 [CHANGELOG.md](CHANGELOG.md)）
+当前版本：**v1.2.0**（详见 [CHANGELOG.md](CHANGELOG.md)）
 
 ## 界面
 
 - 深空星空背景（canvas 星点 + 星云光晕 + 偶发流星）+ 磨砂玻璃面板 + 霓虹细描边，金色渐变标题 `点名器`
 - 中央磨砂玻璃盘面显示姓名，抽中时放大定格并撒彩带
 - 暗玻璃次按钮配蓝紫霓虹描边、实色渐变主按钮，圆角胶囊控件
-- 下方三个按钮：开始随机 / 停止选人（同一个按钮切换）、重置名单、清空记录
+- 下方两个按钮：开始随机 / 停止选人（同一个按钮切换）、重置记录
 - 底部显示「已提问过的同学：」记录
-- 右上角「导入 Excel」，旁边齿轮按钮打开「动态参数」面板，左上角显示名单人数
-- 动态参数可实时调整：流星间隔、流星头部大小、背景星数量、闪烁星数量、星点呼吸速度、极光流动速度；关闭面板时写入本地存储
+- 右上角齿轮按钮打开右侧「设置」抽屉，抽屉内提供「导入 Excel」入口和「界面皮肤」切换；左上角显示名单人数
+- 设置抽屉「皮肤设置」子菜单内的动态参数可实时调整：流星间隔、流星头部大小、背景星数量、闪烁星数量、星点呼吸速度、极光流动速度；关闭抽屉、页面隐藏或刷新时写入本地存储
+- 内置六个皮肤：「经典星空」（深空背景、流星与彩带）、「简约」（深色扁平金边、彩带）、「玻璃拟态」（低饱和极光 + 细噪点 + 磨砂玻璃）、「新拟态」（浅色柔影 Soft UI）、「便当盒」（浅灰底 + 白色姓名卡 + 蓝紫渐变强调）和「AI 原生」（浅色虹彩渐变），选择会被记住
 
 ## 使用
 
 1. 打开 `index.html`。
-2. 点击右上角「导入 Excel」选择表格，或直接把文件拖进页面。
+2. 点击右上角齿轮打开「设置」，点「导入 Excel」选择表格，或直接把文件拖进页面。
 3. 点击「开始随机」，名字开始滚动，按钮变为红色的「停止选人」。
 4. 再次点击同一按钮（或直接点姓名面板、按空格）定格结果，按钮恢复绿色「开始随机」。
 5. 下一次点名会自动跳过已经点过的同学。
@@ -50,20 +51,95 @@
 | 按钮 | 作用 |
 | --- | --- |
 | 开始随机 / 停止选人 | 同一个按钮：点击开始滚动，同时变红显示「停止选人」；再点一次定格结果并写入已点记录 |
-| 重置名单 | 清空已点记录，姓名重新回到待抽池 |
-| 清空记录 | 只清空底部记录，保留当前显示的姓名，不弹提示 |
+| 重置记录 | 清空已点记录，姓名重新回到待抽池，姓名面板回到「准备开始」，不弹提示 |
+
+## 皮肤与代码结构
+
+界面采用「核心 + 皮肤」策略模式：
+
+- `js/core.js`：名单状态、localStorage、Excel 解析、点名规则与滚动循环，不接触任何页面 DOM。
+- `js/skins/*.js`：皮肤实现，各自负责 DOM、事件、特效与设置项。
+- `js/app.js`：引导层，创建核心、挂载/切换皮肤、全局空格键与拖拽导入。
+- `js/ui/settings.js`：皮肤共用设置抽屉外壳，固定提供导入入口与皮肤选择器。
+- `js/ui/skin-kit.js`：轻量皮肤工厂，封装通用渲染、历史、设置入口与生命周期；新皮肤只需提供模板和类名。
+
+皮肤接口（经典脚本 + 全局命名空间，无需构建工具）：
+
+```js
+NamePicker.skins.register({
+  id: 'my-skin',
+  label: '我的皮肤',
+  css: 'css/skins/my-skin.css',
+  create(ctx) {
+    return {
+      mount(root, ctx) {},       // 在 root 内生成自己的 DOM 并绑定局部事件
+      unmount() {},              // 清理 DOM、监听、RAF、定时器
+      render(state, change) {},  // 幂等全量渲染，change.reason 区分 init/import/start/stop/reset/skin
+      tick(name) {},             // 滚动中的候选姓名
+      toast(message, tone) {},
+      celebrate() {},            // 可选
+      setDropActive(active) {}   // 可选
+    };
+  }
+});
+```
+
+新增皮肤时：加入 `js/skins/<name>.js` 与 `css/skins/<name>.css`，在 `index.html` 中按现有格式追加 `<script>` 和带 `data-skin-css` 的 `<link>`（`media="not all"`）。切换皮肤只启用当前皮肤的样式表，因此不同皮肤可以复用同名 class。使用 `NamePicker.createSimpleSkin()` 时只需提供模板、类名和长姓名适配参数。
+
+### 皮肤配置存储
+
+每个皮肤的用户设置写入独立的 JSON 键 `picker.settings.<皮肤id>`，互不覆盖，刷新或重新打开后自动恢复：
+
+```json
+{
+  "version": 1,
+  "effects": {
+    "meteorCycle": 8,
+    "meteorHead": 9,
+    "baseStarCount": 1200,
+    "starCount": 100,
+    "twinkleSpeed": 1,
+    "auroraSpeed": 1
+  }
+}
+```
+
+皮肤代码里通过 `NamePicker.settings.get(id, fallback)` / `NamePicker.settings.set(id, value)` 读写。经典星空会兼容旧版 `picker.motion` 的配置，并在下次保存时写入新键；简约、玻璃拟态、新拟态、便当盒、AI 原生目前没有可调项，因此不会生成配置。
 
 ## 文件说明
 
 ```
 name_picker/
-├── index.html                 页面结构
-├── style.css                  样式与动效
-├── app.js                     点名、导入、存储等逻辑
-├── vendor/xlsx.full.min.js    SheetJS，本地解析 Excel
+├── index.html                    页面外壳：挂载点 + 样式/脚本引用
+├── css/
+│   ├── base.css                  与皮肤无关的 reset
+│   └── skins/
+│       ├── classic.css           经典星空皮肤样式
+│       ├── minimal.css           简约皮肤样式
+│       ├── glass.css             玻璃拟态皮肤样式
+│       ├── softui.css            新拟态皮肤样式
+│       ├── bento.css             便当盒皮肤样式
+│       └── ainative.css          AI 原生皮肤样式
+├── js/
+│   ├── boot-skin.js              首屏预启用正确皮肤样式
+│   ├── namespace.js              命名空间、存储、皮肤注册表、监听清理器
+│   ├── core.js                   点名核心：状态、导入解析、随机、滚动循环
+│   ├── app.js                    引导：创建核心、切换皮肤、全局键盘/拖拽
+│   ├── ui/
+│   │   ├── common.js             toast、长姓名适配等共用 UI 工具
+│   │   ├── settings.js           共用设置抽屉（导入、皮肤选择器）
+│   │   └── skin-kit.js           轻量皮肤工厂（模板 + 类名即可注册）
+│   └── skins/
+│       ├── classic.js            经典星空皮肤
+│       ├── minimal.js            简约皮肤
+│       ├── glass.js              玻璃拟态皮肤
+│       ├── softui.js             新拟态皮肤
+│       ├── bento.js              便当盒皮肤
+│       └── ainative.js           AI 原生皮肤
+├── vendor/xlsx.full.min.js       SheetJS，本地解析 Excel
 ├── .github/workflows/deploy.yml  tag 触发 Pages 部署
-├── CHANGELOG.md               更新日志
-└── README.md                  本说明
+├── CHANGELOG.md                  更新日志
+└── README.md                     本说明
 ```
 
 ## 备注
