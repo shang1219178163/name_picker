@@ -2,7 +2,7 @@
 
 纯前端随机点名工具，双击 `index.html` 即可使用，无需服务器、无需联网。
 
-当前版本：**v1.1.0**（详见 [CHANGELOG.md](CHANGELOG.md)）
+当前版本：**v1.2.0**（详见 [CHANGELOG.md](CHANGELOG.md)）
 
 ## 界面
 
