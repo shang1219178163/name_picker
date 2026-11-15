@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --bg: #060912;
   --bg-deep: #04060d;
   --ink: #eef2ff;
@@ -19,13 +20,6 @@
   --meteor-head: 9px;
   --twinkle-speed: 1;
   --aurora-speed: 1;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  min-height: 100%;
-  margin: 0;
 }
 
 body {
@@ -389,6 +383,29 @@ body {
   color: var(--gold-soft);
   font-variant-numeric: tabular-nums;
   text-align: right;
+}
+
+.setting-skin {
+  margin-top: 10px;
+  align-items: center;
+}
+
+.settings-select {
+  min-width: 96px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.settings-select:focus-visible {
+  outline: 2px solid rgba(34, 211, 238, 0.8);
+  outline-offset: 2px;
 }
 
 .setting input[type="range"] {

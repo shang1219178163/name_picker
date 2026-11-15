@@ -1,0 +1,363 @@
+/* 点名器 · 简约皮肤：浅色卡片，无星空与彩带 */
+:root {
+  color-scheme: light;
+  --mp-bg: #f4f5f7;
+  --mp-card: #ffffff;
+  --mp-ink: #1f2430;
+  --mp-muted: #6b7280;
+  --mp-line: #e5e7eb;
+  --mp-accent: #2563eb;
+  --mp-accent-ink: #ffffff;
+  --mp-danger: #dc2626;
+  --mp-font: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: var(--mp-bg);
+  color: var(--mp-ink);
+  font-family: var(--mp-font);
+}
+
+.mp {
+  width: min(760px, 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: clamp(20px, 4vh, 48px) clamp(16px, 4vw, 40px) 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- 顶部 ---------- */
+.mp-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mp-brand h1 {
+  margin: 0;
+  font-size: clamp(22px, 3.4vh, 30px);
+  letter-spacing: 0.08em;
+}
+
+.mp-stat {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--mp-muted);
+  font-size: 13px;
+}
+
+.mp-actions { position: relative; }
+
+.mp-gear {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--mp-line);
+  border-radius: 50%;
+  background: var(--mp-card);
+  color: var(--mp-muted);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.mp-gear:hover { color: var(--mp-accent); border-color: var(--mp-accent); }
+
+/* ---------- 姓名面板 ---------- */
+.mp-panel {
+  margin-top: clamp(24px, 5vh, 56px);
+  min-height: clamp(200px, 36vh, 380px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 3vw, 44px);
+  border-radius: 24px;
+  background: var(--mp-card);
+  border: 1px solid var(--mp-line);
+  box-shadow: 0 20px 50px -40px rgba(15, 23, 42, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mp-panel.is-rolling {
+  border-color: var(--mp-accent);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+}
+
+.mp-name {
+  max-width: 100%;
+  font-size: clamp(48px, 12vw, 104px);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  letter-spacing: 0.02em;
+  transition: opacity 0.18s ease;
+}
+
+.mp-name.is-placeholder {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 500;
+  color: var(--mp-muted);
+  letter-spacing: 0.12em;
+}
+
+.mp-name.wrap { overflow-wrap: anywhere; word-break: break-all; }
+
+.mp-panel.is-settled .mp-name { animation: mp-pop 0.45s ease; }
+
+@keyframes mp-pop {
+  0% { transform: scale(0.9); opacity: 0.4; }
+  70% { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- 操作按钮 ---------- */
+.mp-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: clamp(18px, 3vh, 30px);
+}
+
+.mp-btn {
+  height: 52px;
+  border: 1px solid var(--mp-line);
+  border-radius: 14px;
+  background: var(--mp-card);
+  color: var(--mp-ink);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+}
+
+.mp-btn:hover { border-color: #cbd5e1; }
+.mp-btn:active { transform: scale(0.985); }
+
+.mp-primary {
+  background: var(--mp-accent);
+  border-color: var(--mp-accent);
+  color: var(--mp-accent-ink);
+}
+
+.mp-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+.mp-primary.is-running {
+  background: var(--mp-danger);
+  border-color: var(--mp-danger);
+}
+
+.mp-primary.is-running:hover { background: #b91c1c; border-color: #b91c1c; }
+
+/* ---------- 历史记录 ---------- */
+.mp-history { margin-top: clamp(22px, 4vh, 40px); }
+
+.mp-history h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mp-muted);
+  letter-spacing: 0.06em;
+}
+
+.mp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mp-chip {
+  padding: 6px 12px;
+  border: 1px solid var(--mp-line);
+  border-radius: 999px;
+  background: var(--mp-card);
+  color: var(--mp-ink);
+  font-size: 14px;
+  animation: mp-chip-in 0.24s ease;
+}
+
+.mp-chip.is-latest {
+  border-color: var(--mp-accent);
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--mp-accent);
+}
+
+@keyframes mp-chip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.mp-empty {
+  margin: 0;
+  color: var(--mp-muted);
+  font-size: 13px;
+}
+
+/* ---------- 拖拽遮罩 ---------- */
+.mp-drop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(244, 245, 247, 0.86);
+  border: 2px dashed var(--mp-accent);
+  color: var(--mp-accent);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.mp-drop.is-active { display: flex; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  z-index: 80;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: #111827;
+  color: #f9fafb;
+  font-size: 14px;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.error { background: var(--mp-danger); }
+
+/* ---------- 设置弹窗（共用，简约外观） ---------- */
+.settings-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 40;
+  width: min(280px, calc(100vw - 32px));
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--mp-line);
+  border-radius: 16px;
+  background: var(--mp-card);
+  box-shadow: 0 24px 60px -30px rgba(15, 23, 42, 0.35);
+  color: var(--mp-ink);
+  font-size: 14px;
+  animation: mp-menu-in 0.16s ease;
+}
+
+.settings-menu[hidden] { display: none; }
+
+@keyframes mp-menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  letter-spacing: 0.06em;
+}
+
+.settings-close {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f2f4;
+  color: var(--mp-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.settings-close:hover { color: var(--mp-ink); background: #e5e7eb; }
+
+.settings-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 0;
+  border: 1px solid var(--mp-line);
+  border-radius: 10px;
+  background: #f8f9fa;
+  color: var(--mp-ink);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.settings-action:hover { background: #eef1f5; border-color: #cbd5e1; }
+
+.settings-import {
+  margin: 10px 0 4px;
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.06);
+  color: var(--mp-accent);
+  font-weight: 600;
+}
+
+.settings-import:hover { background: rgba(37, 99, 235, 0.12); border-color: var(--mp-accent); }
+
+.settings-action:focus-visible,
+.settings-close:focus-visible,
+.mp-btn:focus-visible,
+.mp-gear:focus-visible {
+  outline: 2px solid var(--mp-accent);
+  outline-offset: 2px;
+}
+
+.setting {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 10px 0 2px;
+  border-top: 1px solid var(--mp-line);
+}
+
+.setting > span { color: var(--mp-muted); }
+.setting-skin { margin-top: 10px; }
+
+.settings-select {
+  min-width: 96px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--mp-line);
+  border-radius: 8px;
+  background: var(--mp-card);
+  color: var(--mp-ink);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 480px) {
+  .mp { padding-left: 14px; padding-right: 14px; }
+  .mp-panel { min-height: 180px; border-radius: 18px; }
+  .mp-name { font-size: clamp(40px, 16vw, 72px); }
+  .mp-name.is-placeholder { font-size: 18px; }
+  .mp-controls { grid-template-columns: 1fr; }
+  .mp-btn { height: 48px; font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-panel.is-settled .mp-name,
+  .mp-chip { animation: none; }
+}

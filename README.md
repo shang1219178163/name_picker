@@ -11,8 +11,9 @@
 - 暗玻璃次按钮配蓝紫霓虹描边、实色渐变主按钮，圆角胶囊控件
 - 下方两个按钮：开始随机 / 停止选人（同一个按钮切换）、重置记录
 - 底部显示「已提问过的同学：」记录
-- 右上角齿轮按钮打开「设置」弹窗，弹窗内提供「导入 Excel」入口；左上角显示名单人数
+- 右上角齿轮按钮打开「设置」弹窗，弹窗内提供「导入 Excel」入口和「界面皮肤」切换；左上角显示名单人数
 - 设置弹窗内的动态参数可实时调整：流星间隔、流星头部大小、背景星数量、闪烁星数量、星点呼吸速度、极光流动速度；关闭面板时写入本地存储
+- 内置两个皮肤：「经典星空」（深空背景、流星与彩带）和「简约」（浅色卡片、无背景特效），选择会被记住
 
 ## 使用
 
@@ -52,17 +53,63 @@
 | 开始随机 / 停止选人 | 同一个按钮：点击开始滚动，同时变红显示「停止选人」；再点一次定格结果并写入已点记录 |
 | 重置记录 | 清空已点记录，姓名重新回到待抽池，姓名面板回到「准备开始」，并弹出提示 |
 
+## 皮肤与代码结构
+
+界面采用「核心 + 皮肤」策略模式：
+
+- `js/core.js`：名单状态、localStorage、Excel 解析、点名规则与滚动循环，不接触任何页面 DOM。
+- `js/skins/*.js`：皮肤实现，各自负责 DOM、事件、特效与设置项。
+- `js/app.js`：引导层，创建核心、挂载/切换皮肤、全局空格键与拖拽导入。
+- `js/ui/settings.js`：皮肤共用设置弹窗外壳，固定提供导入入口与皮肤选择器。
+
+皮肤接口（经典脚本 + 全局命名空间，无需构建工具）：
+
+```js
+NamePicker.skins.register({
+  id: 'my-skin',
+  label: '我的皮肤',
+  css: 'css/skins/my-skin.css',
+  create(ctx) {
+    return {
+      mount(root, ctx) {},       // 在 root 内生成自己的 DOM 并绑定局部事件
+      unmount() {},              // 清理 DOM、监听、RAF、定时器
+      render(state, change) {},  // 幂等全量渲染，change.reason 区分 init/import/start/stop/reset/skin
+      tick(name) {},             // 滚动中的候选姓名
+      toast(message, tone) {},
+      celebrate() {},            // 可选
+      setDropActive(active) {}   // 可选
+    };
+  }
+});
+```
+
+新增皮肤时：加入 `js/skins/<name>.js` 与 `css/skins/<name>.css`，在 `index.html` 中按现有格式追加 `<script>` 和带 `data-skin-css` 的 `<link>`（默认 `disabled`）。切换皮肤只启用当前皮肤的样式表，因此不同皮肤可以复用同名 class。
+
 ## 文件说明
 
 ```
 name_picker/
-├── index.html                 页面结构
-├── style.css                  样式与动效
-├── app.js                     点名、导入、存储等逻辑
-├── vendor/xlsx.full.min.js    SheetJS，本地解析 Excel
+├── index.html                    页面外壳：挂载点 + 样式/脚本引用
+├── css/
+│   ├── base.css                  与皮肤无关的 reset
+│   └── skins/
+│       ├── classic.css           经典星空皮肤样式
+│       └── minimal.css           简约皮肤样式
+├── js/
+│   ├── boot-skin.js              首屏预启用正确皮肤样式
+│   ├── namespace.js              命名空间、存储、皮肤注册表、监听清理器
+│   ├── core.js                   点名核心：状态、导入解析、随机、滚动循环
+│   ├── app.js                    引导：创建核心、切换皮肤、全局键盘/拖拽
+│   ├── ui/
+│   │   ├── common.js             toast、长姓名适配等共用 UI 工具
+│   │   └── settings.js           共用设置弹窗（导入、皮肤选择器）
+│   └── skins/
+│       ├── classic.js            经典星空皮肤
+│       └── minimal.js            简约皮肤
+├── vendor/xlsx.full.min.js       SheetJS，本地解析 Excel
 ├── .github/workflows/deploy.yml  tag 触发 Pages 部署
-├── CHANGELOG.md               更新日志
-└── README.md                  本说明
+├── CHANGELOG.md                  更新日志
+└── README.md                     本说明
 ```
 
 ## 备注
