@@ -611,6 +611,8 @@
 
     btn.addEventListener('click', () => setOpen(menu.hidden));
     el.settingsClose.addEventListener('click', () => setOpen(false));
+    // 选择文件前收起菜单，避免文件对话框关闭后弹窗仍盖在页面上
+    el.importBtn.addEventListener('click', () => setOpen(false));
     document.addEventListener('click', event => {
       if (!menu.hidden && !menu.contains(event.target) && !btn.contains(event.target)) setOpen(false);
     });
