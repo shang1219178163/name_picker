@@ -1,0 +1,503 @@
+/* 点名器 · 便当盒网格：浅灰底 + 蓝紫渐变主卡 + 白色模块 */
+html[data-skin="bento"] {
+  color-scheme: light;
+  --b-bg: #f5f5f7;
+  --b-ink: #1d1d1f;
+  --b-muted: #6e6e73;
+  --b-line: rgba(0, 0, 0, 0.08);
+  --b-card: #ffffff;
+  --b-tint: #e8f1fe;
+  --b-gradient: linear-gradient(105deg, #0c6be5 0%, #2c5ce9 38%, #4452ed 66%, #6343f1 100%);
+  --b-accent: #2c5ce9;
+  --b-accent-deep: #6343f1;
+  --drawer-bg: rgba(250, 250, 252, 0.97);
+  --drawer-backdrop: rgba(20, 20, 30, 0.32);
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(900px 700px at 10% -14%, rgba(255, 255, 255, 0.95), transparent 60%),
+    var(--b-bg);
+  color: var(--b-ink);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  overflow-y: auto;
+}
+
+.bento-app {
+  width: min(680px, 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: clamp(18px, 4vh, 36px) clamp(14px, 3vw, 20px) calc(4vh + env(safe-area-inset-bottom));
+}
+
+/* ---------- 顶部 ---------- */
+.bento-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.bento-brand {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.bento-title {
+  margin: 0;
+  color: var(--b-ink);
+  font-size: clamp(24px, 4.2vh, 38px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.bento-stat {
+  color: var(--b-muted);
+  font-size: clamp(12px, 1.7vh, 13px);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.bento-actions { position: relative; }
+
+.bento-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--b-line);
+  border-radius: 14px;
+  background: var(--b-card);
+  color: var(--b-muted);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.bento-icon:hover { color: var(--b-accent); border-color: rgba(44, 92, 233, 0.35); }
+
+/* ---------- 单列模块（移动端布局，所有宽度通用） ---------- */
+.bento-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.6vw, 16px);
+  margin-top: clamp(18px, 3.6vh, 28px);
+}
+
+.bento-tile {
+  position: relative;
+  border: 1px solid var(--b-line);
+  border-radius: clamp(20px, 2.4vh, 28px);
+  overflow: hidden;
+}
+
+.bento-name-tile {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(240px, 40vh, 380px);
+  padding: clamp(20px, 4vw, 36px);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--b-gradient);
+  box-shadow:
+    0 34px 80px -46px rgba(44, 92, 233, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.bento-name-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 70% at 18% 8%, rgba(255, 255, 255, 0.28), transparent 58%),
+    radial-gradient(70% 70% at 100% 100%, rgba(99, 67, 241, 0.45), transparent 62%);
+  pointer-events: none;
+}
+
+.bento-name {
+  position: relative;
+  max-width: 100%;
+  color: #ffffff;
+  font-size: clamp(40px, 9vw, 96px);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 10px 40px rgba(15, 23, 60, 0.28);
+}
+
+.bento-name.is-placeholder {
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.66);
+  text-shadow: none;
+}
+
+.bento-name.wrap {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.14;
+}
+
+.bento-name-tile.is-rolling .bento-name {
+  animation: bento-jitter 0.2s linear infinite;
+}
+
+@keyframes bento-jitter {
+  0% { transform: translate(0, 0); opacity: 1; }
+  30% { transform: translate(0.5px, -0.5px); opacity: 0.92; }
+  60% { transform: translate(-0.5px, 0.5px); opacity: 1; }
+  100% { transform: translate(0, 0); }
+}
+
+.bento-name-tile.is-settled .bento-name {
+  animation: bento-pop 0.45s cubic-bezier(0.22, 1.3, 0.36, 1);
+}
+
+@keyframes bento-pop {
+  0% { transform: scale(0.92); opacity: 0.55; }
+  60% { transform: scale(1.02); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.bento-name-tile.is-celebrating {
+  animation: bento-glow 0.7s ease;
+}
+
+@keyframes bento-glow {
+  0% { box-shadow: 0 34px 80px -46px rgba(44, 92, 233, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+  45% {
+    box-shadow:
+      0 0 0 5px rgba(255, 255, 255, 0.16),
+      0 24px 70px -24px rgba(99, 67, 241, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  100% { box-shadow: 0 34px 80px -46px rgba(44, 92, 233, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+}
+
+/* 操作卡 */
+.bento-action-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: clamp(16px, 3vw, 20px);
+  background: var(--b-card);
+}
+
+.bento-btn {
+  width: 100%;
+  height: clamp(50px, 6.4vh, 56px);
+  padding: 0 18px;
+  border: 1px solid rgba(29, 29, 31, 0.14);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--b-ink);
+  font-family: inherit;
+  font-size: clamp(16px, 2vh, 17px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.16s ease, box-shadow 0.18s ease;
+}
+
+.bento-btn:hover { background: #f5f5f7; }
+.bento-btn:active { transform: scale(0.985); }
+
+.bento-btn-primary {
+  border-color: transparent;
+  background: var(--b-gradient);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 16px 34px -20px rgba(44, 92, 233, 0.7);
+}
+
+.bento-btn-primary:hover {
+  background: linear-gradient(105deg, #0f74f2 0%, #345ff0 38%, #4a58f2 66%, #6a49f4 100%);
+  box-shadow: 0 18px 38px -20px rgba(44, 92, 233, 0.8);
+}
+
+.bento-btn-primary.is-running {
+  background: linear-gradient(105deg, #5b3ff0, #7a4bf3);
+  color: #ffffff;
+}
+
+.bento-btn-primary.is-running:hover { background: linear-gradient(105deg, #4e33e2, #6d40ea); }
+
+.bento-btn-ghost {
+  border-color: rgba(29, 29, 31, 0.14);
+  background: transparent;
+}
+
+.bento-btn-ghost:hover { background: #f5f5f7; }
+
+/* 历史卡 */
+.bento-history-tile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: clamp(140px, 20vh, 180px);
+  padding: clamp(16px, 3vw, 20px);
+  background: var(--b-tint);
+  overflow: hidden;
+}
+
+.bento-history-title {
+  margin: 0 0 12px;
+  color: var(--b-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.bento-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+
+.bento-chip {
+  padding: 7px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 9px;
+  background: #ffffff;
+  color: var(--b-ink);
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  animation: bento-chip-in 0.26s ease;
+}
+
+.bento-chip.is-latest {
+  border-color: transparent;
+  background: var(--b-gradient);
+  color: #ffffff;
+}
+
+@keyframes bento-chip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.bento-empty {
+  margin: 0;
+  color: var(--b-muted);
+  font-size: 13px;
+}
+
+/* ---------- 拖拽 ---------- */
+.bento-drop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  place-items: center;
+  background: rgba(244, 242, 238, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.bento-drop.is-active { display: grid; }
+
+.bento-drop span {
+  padding: 38px 56px;
+  border: 2px dashed rgba(44, 92, 233, 0.32);
+  border-radius: 22px;
+  background: var(--b-bg);
+  color: var(--b-ink);
+  font-size: 17px;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(32px + env(safe-area-inset-bottom));
+  z-index: 80;
+  max-width: calc(100vw - 32px);
+  padding: 11px 20px;
+  border-radius: 12px;
+  background: var(--b-ink);
+  color: #f8f6f2;
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+  opacity: 0;
+  transform: translate(-50%, 10px);
+  pointer-events: none;
+  transition: opacity 0.24s ease, transform 0.24s ease;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.error { background: #9c3b3b; }
+
+/* ---------- 设置抽屉 ---------- */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+html[data-skin="bento"] .settings-backdrop { background: var(--drawer-backdrop); }
+
+.settings-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+.settings-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  width: min(360px, 92vw);
+  height: 100vh;
+  height: 100dvh;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  transform: translateX(102%);
+  pointer-events: none;
+  transition: transform 0.32s cubic-bezier(0.22, 0.85, 0.24, 1);
+}
+
+html[data-skin="bento"] .settings-drawer {
+  color: var(--b-ink);
+  font-size: 14px;
+  background: var(--drawer-bg);
+  box-shadow: -24px 0 60px -30px rgba(31, 35, 40, 0.35);
+}
+
+.settings-drawer.is-open { transform: none; pointer-events: auto; }
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+}
+
+.settings-head strong { font-weight: 600; }
+
+.settings-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 0;
+  border: 1px solid var(--b-line);
+  border-radius: 12px;
+  background: var(--b-card);
+  color: var(--b-ink);
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.settings-action:hover { border-color: rgba(31, 35, 40, 0.22); background: #fff; }
+
+.settings-import {
+  margin: 10px 0 2px;
+  border-color: transparent;
+  background: var(--b-gradient);
+  color: #fff;
+  font-weight: 600;
+}
+
+.settings-import:hover { background: linear-gradient(105deg, #0f74f2, #345ff0 38%, #4a58f2 66%, #6a49f4); color: #fff; }
+
+.setting {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 12px 0 2px;
+  border-top: 1px solid var(--b-line);
+}
+
+.setting > span { color: var(--b-muted); }
+.setting-skin { margin-top: 4px; }
+
+.settings-select {
+  min-width: 96px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--b-line);
+  border-radius: 9px;
+  background: var(--b-card);
+  color: var(--b-ink);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.settings-action:focus-visible,
+.settings-select:focus-visible,
+.bento-btn:focus-visible,
+.bento-icon:focus-visible {
+  outline: 2px solid rgba(44, 92, 233, 0.55);
+  outline-offset: 2px;
+}
+
+.settings-group {
+  margin-top: 12px;
+  border-top: 1px solid var(--b-line);
+}
+
+.settings-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 10px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  list-style: none;
+}
+
+.settings-group summary::-webkit-details-marker { display: none; }
+
+.settings-group summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.settings-group[open] summary::after { transform: rotate(-135deg); }
+
+/* ---------- 小屏微调 ---------- */
+@media (max-width: 480px) {
+  .bento-app { padding-left: 14px; padding-right: 14px; }
+  .bento-top { align-items: flex-start; }
+  .bento-title { font-size: 26px; }
+  .bento-name-tile { min-height: 240px; padding: 20px 14px; border-radius: 22px; }
+  .bento-name { font-size: clamp(38px, 16vw, 76px); }
+  .bento-name.is-placeholder { font-size: 18px; }
+  .bento-action-tile { flex-direction: column; padding: 16px; border-radius: 20px; }
+  .bento-btn { height: 50px; font-size: 16px; }
+  .bento-history-tile { border-radius: 20px; }
+  .toast { text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-name-tile.is-rolling .bento-name { animation: none !important; }
+  * { transition-duration: 0.01ms !important; }
+}
