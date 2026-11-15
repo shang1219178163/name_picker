@@ -275,7 +275,6 @@
       state.phase = 'idle';
       save();
       emitState('reset');
-      notify('已重置记录');
     }
 
     function importNames(names, source) {
