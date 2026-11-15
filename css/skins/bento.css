@@ -26,11 +26,9 @@ body {
 }
 
 .bento-app {
-  width: min(680px, 100%);
   min-height: 100vh;
   min-height: 100dvh;
-  margin: 0 auto;
-  padding: clamp(18px, 4vh, 36px) clamp(14px, 3vw, 20px) calc(4vh + env(safe-area-inset-bottom));
+  padding: clamp(18px, 4vh, 36px) 2% calc(4vh + env(safe-area-inset-bottom));
 }
 
 /* ---------- 顶部 ---------- */
@@ -102,11 +100,8 @@ body {
   width: 100%;
   min-height: clamp(240px, 40vh, 380px);
   padding: clamp(20px, 4vw, 36px);
-  border-color: rgba(255, 255, 255, 0.22);
-  background: var(--b-gradient);
-  box-shadow:
-    0 34px 80px -46px rgba(44, 92, 233, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(160deg, #ffffff, #f7f7f9);
+  box-shadow: 0 30px 70px -56px rgba(20, 20, 30, 0.32);
 }
 
 .bento-name-tile::before {
@@ -114,29 +109,27 @@ body {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(80% 70% at 18% 8%, rgba(255, 255, 255, 0.28), transparent 58%),
-    radial-gradient(70% 70% at 100% 100%, rgba(99, 67, 241, 0.45), transparent 62%);
+    radial-gradient(80% 70% at 18% 8%, rgba(255, 255, 255, 0.95), transparent 58%),
+    radial-gradient(70% 70% at 100% 100%, rgba(29, 29, 31, 0.035), transparent 62%);
   pointer-events: none;
 }
 
 .bento-name {
   position: relative;
   max-width: 100%;
-  color: #ffffff;
+  color: var(--b-ink);
   font-size: clamp(40px, 9vw, 96px);
   font-weight: 600;
   line-height: 1.06;
   letter-spacing: 0.02em;
   text-align: center;
-  text-shadow: 0 10px 40px rgba(15, 23, 60, 0.28);
 }
 
 .bento-name.is-placeholder {
   font-size: clamp(20px, 2.6vw, 26px);
   font-weight: 400;
   letter-spacing: 0.18em;
-  color: rgba(255, 255, 255, 0.66);
-  text-shadow: none;
+  color: var(--b-muted);
 }
 
 .bento-name.wrap {
@@ -171,20 +164,19 @@ body {
 }
 
 @keyframes bento-glow {
-  0% { box-shadow: 0 34px 80px -46px rgba(44, 92, 233, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+  0% { box-shadow: 0 30px 70px -56px rgba(20, 20, 30, 0.32); }
   45% {
     box-shadow:
-      0 0 0 5px rgba(255, 255, 255, 0.16),
-      0 24px 70px -24px rgba(99, 67, 241, 0.7),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      0 0 0 5px rgba(29, 29, 31, 0.05),
+      0 24px 60px -30px rgba(29, 29, 31, 0.28);
   }
-  100% { box-shadow: 0 34px 80px -46px rgba(44, 92, 233, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+  100% { box-shadow: 0 30px 70px -56px rgba(20, 20, 30, 0.32); }
 }
 
 /* 操作卡 */
 .bento-action-tile {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   gap: 10px;
   width: 100%;
@@ -193,9 +185,10 @@ body {
 }
 
 .bento-btn {
-  width: 100%;
+  flex: 0 0 160px;
+  width: 160px;
   height: clamp(50px, 6.4vh, 56px);
-  padding: 0 18px;
+  padding: 0 14px;
   border: 1px solid rgba(29, 29, 31, 0.14);
   border-radius: 14px;
   background: transparent;
@@ -491,8 +484,8 @@ html[data-skin="bento"] .settings-drawer {
   .bento-name-tile { min-height: 240px; padding: 20px 14px; border-radius: 22px; }
   .bento-name { font-size: clamp(38px, 16vw, 76px); }
   .bento-name.is-placeholder { font-size: 18px; }
-  .bento-action-tile { flex-direction: column; padding: 16px; border-radius: 20px; }
-  .bento-btn { height: 50px; font-size: 16px; }
+  .bento-action-tile { padding: 16px; border-radius: 20px; }
+  .bento-btn { height: 50px; font-size: 16px; padding: 0 10px; }
   .bento-history-tile { border-radius: 20px; }
   .toast { text-align: center; }
 }

@@ -111,13 +111,11 @@ body {
 .glass-app {
   position: relative;
   z-index: 1;
-  width: min(900px, 100%);
   min-height: 100vh;
   min-height: 100dvh;
-  margin: 0 auto;
-  padding: clamp(20px, 4vh, 44px) clamp(16px, 3vw, 36px) calc(4vh + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
+  padding: clamp(20px, 4vh, 44px) 2% calc(4vh + env(safe-area-inset-bottom));
   animation: glass-enter 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
