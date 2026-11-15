@@ -20,8 +20,7 @@
     nameDisplay: document.getElementById('nameDisplay'),
     panel: document.getElementById('panel'),
     toggleBtn: document.getElementById('toggleBtn'),
-    resetAllBtn: document.getElementById('resetAllBtn'),
-    clearPickedBtn: document.getElementById('clearPickedBtn'),
+    resetBtn: document.getElementById('resetBtn'),
     historyList: document.getElementById('historyList'),
     historyEmpty: document.getElementById('historyEmpty'),
     dropMask: document.getElementById('dropMask'),
@@ -203,7 +202,7 @@
 
     const pool = state.names.filter(name => !state.picked.includes(name));
     if (!pool.length) {
-      toast('全部同学都点过了，请重置名单', 'error');
+      toast('全部同学都点过了，请重置记录', 'error');
       return;
     }
 
@@ -271,7 +270,7 @@
     if (chip) chip.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  function resetAll() {
+  function resetRecords() {
     if (state.rolling) cancelRoll();
     if (!state.picked.length && !state.names.length) {
       toast('还没有导入名单');
@@ -284,20 +283,7 @@
     renderHistory({ animate: false });
     updateStat();
     save();
-    toast('已重置名单');
-  }
-
-  function clearPicked() {
-    if (state.rolling) cancelRoll();
-    if (!state.picked.length) {
-      toast('还没有已点记录');
-      return;
-    }
-    state.picked = [];
-    state.latest = null;
-    renderHistory({ animate: false });
-    updateStat();
-    save();
+    toast('已重置记录');
   }
 
   /* ---------- 彩带 ---------- */
@@ -521,8 +507,7 @@
       startRoll();
     }
   });
-  el.resetAllBtn.addEventListener('click', resetAll);
-  el.clearPickedBtn.addEventListener('click', clearPicked);
+  el.resetBtn.addEventListener('click', resetRecords);
 
   el.panel.addEventListener('click', () => {
     if (state.rolling) stopRoll();

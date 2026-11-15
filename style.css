@@ -664,8 +664,7 @@ body {
 }
 
 /* 次按钮：暗玻璃 + 霓虹细描边 */
-.ctrl.reset,
-.ctrl.clear {
+.ctrl.reset {
   position: relative;
   border-color: rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.045);
@@ -675,10 +674,8 @@ body {
 }
 
 .ctrl.reset { color: #dfe7ff; }
-.ctrl.clear { color: #ebe4ff; }
 
-.ctrl.reset::after,
-.ctrl.clear::after {
+.ctrl.reset::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -692,7 +689,6 @@ body {
 }
 
 .ctrl.reset::after { background: linear-gradient(135deg, rgba(79, 128, 238, 0.8), rgba(139, 92, 246, 0.35)); }
-.ctrl.clear::after { background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(34, 211, 238, 0.35)); }
 
 /* ---------- 已提问记录 ---------- */
 .history {
