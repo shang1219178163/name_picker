@@ -4,7 +4,8 @@
 
   const NamePicker = window.NamePicker;
 
-  const STORAGE_KEY_MOTION = 'picker.motion';
+  const LEGACY_MOTION_KEY = 'picker.motion';
+  const SETTINGS_VERSION = 1;
 
   const TEMPLATE = `
     <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -76,7 +77,13 @@
   ];
 
   function loadMotion(storage) {
-    const stored = storage.getJSON(STORAGE_KEY_MOTION, {});
+    // 新格式：picker.settings.classic = { version, effects: {...} }
+    // 兼容旧版本：picker.motion = {...}
+    const saved = NamePicker.settings.get('classic', null);
+    const legacy = storage.getJSON(LEGACY_MOTION_KEY, {});
+    const source = saved && saved.effects ? saved.effects : (saved || legacy);
+    const stored = source && typeof source === 'object' ? source : {};
+
     const motion = Object.assign({}, MOTION_DEFAULTS, stored);
     // 兼容旧版本保存的星点数量（0/自动、200 以内）
     motion.starCount = Math.min(1000, Math.max(100, Math.round(motion.starCount) || 100));
@@ -199,7 +206,17 @@
     }
 
     function saveMotion() {
-      storage.setJSON(STORAGE_KEY_MOTION, motion);
+      NamePicker.settings.set('classic', {
+        version: SETTINGS_VERSION,
+        effects: {
+          meteorCycle: motion.meteorCycle,
+          meteorHead: motion.meteorHead,
+          baseStarCount: motion.baseStarCount,
+          starCount: motion.starCount,
+          twinkleSpeed: motion.twinkleSpeed,
+          auroraSpeed: motion.auroraSpeed
+        }
+      });
       motionDirty = false;
     }
 
@@ -541,10 +558,15 @@
 
       disposer.on(document, 'visibilitychange', () => {
         if (document.hidden) {
+          if (motionDirty) saveMotion();
           stopTwinkles();
         } else if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
           startTwinkles();
         }
+      });
+      // 页面关闭/刷新前也落盘，避免未关闭抽屉就丢失改动
+      disposer.on(window, 'pagehide', () => {
+        if (motionDirty) saveMotion();
       });
     }
 

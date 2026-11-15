@@ -24,7 +24,10 @@
   if (!known) skin = 'classic';
 
   links.forEach(link => {
-    link.disabled = link.getAttribute('data-skin-css') !== skin;
+    // 用 media 切换而不是 disabled：非当前皮肤的样式也会预先加载，
+    // 切换时立即生效，避免样式表尚未加载造成的白屏闪烁
+    link.media = link.getAttribute('data-skin-css') === skin ? 'all' : 'not all';
+    link.disabled = false;
   });
   document.documentElement.setAttribute('data-skin', skin);
 

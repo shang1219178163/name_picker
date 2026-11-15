@@ -40,7 +40,9 @@
 
   function setSkinCss(id) {
     cssLinks.forEach(link => {
-      link.disabled = link.getAttribute('data-skin-css') !== id;
+      // 两个皮肤的样式表始终保持加载，只通过 media 决定是否生效
+      link.media = link.getAttribute('data-skin-css') === id ? 'all' : 'not all';
+      link.disabled = false;
     });
     document.documentElement.setAttribute('data-skin', id);
   }
@@ -136,6 +138,7 @@
 
   /* ---------- 全局键盘：空格开始/停止 ---------- */
   document.addEventListener('keydown', event => {
+    if (document.documentElement.classList.contains('settings-open')) return;
     const tag = (event.target.tagName || '').toUpperCase();
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'BUTTON' || tag === 'SELECT' || event.target.isContentEditable) return;
     if (event.code === 'Space' || event.key === ' ') {

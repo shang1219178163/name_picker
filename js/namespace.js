@@ -25,6 +25,20 @@
     }
   };
 
+  /* ---------- 皮肤配置：每个皮肤一个独立 JSON 键 ---------- */
+  const settings = {
+    key(skinId) {
+      return 'picker.settings.' + skinId;
+    },
+    get(skinId, fallback) {
+      const value = storage.getJSON(settings.key(skinId), null);
+      return value && typeof value === 'object' ? value : fallback;
+    },
+    set(skinId, value) {
+      return storage.setJSON(settings.key(skinId), value);
+    }
+  };
+
   /* ---------- 皮肤注册表 ---------- */
   const registry = new Map();
 
@@ -89,6 +103,7 @@
   }
 
   NamePicker.storage = storage;
+  NamePicker.settings = settings;
   NamePicker.skins = skins;
   NamePicker.createDisposer = createDisposer;
   NamePicker.byRole = byRole;

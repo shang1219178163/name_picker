@@ -11,12 +11,24 @@ body {
   margin: 0;
 }
 
+/* 皮肤样式未生效的瞬间也保持深色，避免切换时白屏 */
+html {
+  background-color: #0b1228;
+  color-scheme: dark;
+}
+
 body {
   overflow-x: hidden;
+  background-color: #0b1228;
+  color: #eef2ff;
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 [hidden] {
   display: none !important;
+}
+
+html.settings-open {
+  overflow: hidden;
 }
